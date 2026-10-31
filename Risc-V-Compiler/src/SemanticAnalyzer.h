@@ -325,7 +325,7 @@ void InitializeStdFunctions(GeneralList *variableStack)
     PushList(&stdFunction->parameters, parameter);
 
     stdFunction->pointerDepth = 0;
-    stdFunction->type = VOID;
+    stdFunction->type = BOOL;
     PushList(variableStack, stdFunction);
 
     // malloc
@@ -345,6 +345,34 @@ void InitializeStdFunctions(GeneralList *variableStack)
     PushList(&stdFunction->parameters, parameter);
 
     stdFunction->pointerDepth = 1;
+    stdFunction->type = VOID;
+    PushList(variableStack, stdFunction);
+
+    // memWrite
+    stdFunction = (Identifier *)malloc(sizeof(Identifier));
+    stdFunction->funcOrVar = FUNCTION;
+    stdFunction->labelNumber = MEM_WRITE;
+    stdFunction->name = malloc(strlen("memWrite") + 1);
+    strcpy(stdFunction->name, "memWrite");
+    InitializeList(&stdFunction->parameters);
+
+    parameter = (Identifier *)malloc(sizeof(Identifier));
+    parameter->funcOrVar = VARIABLE;
+    parameter->name = (char *)malloc(strlen("address") + 1);
+    strcpy(parameter->name, "address");
+    parameter->pointerDepth = 0;
+    parameter->type = UINT32_T;
+    PushList(&stdFunction->parameters, parameter);
+
+    parameter = (Identifier *)malloc(sizeof(Identifier));
+    parameter->funcOrVar = VARIABLE;
+    parameter->name = (char *)malloc(strlen("value") + 1);
+    strcpy(parameter->name, "value");
+    parameter->pointerDepth = 0;
+    parameter->type = UINT32_T;
+    PushList(&stdFunction->parameters, parameter);
+
+    stdFunction->pointerDepth = 0;
     stdFunction->type = VOID;
     PushList(variableStack, stdFunction);
 }
@@ -466,6 +494,7 @@ Error *SemanticAnylsis(TreeNode *AST)
 
             ScopeOpenContext(FUNCTION_SCOPE);
             PushByte(&tableIndexices, variableStack.count);
+            ASM_Comment(function->name);
             ASM_Label(currentLabelNum);
             UpdateStackList("PCount", PARAMETER);
             for (int i = 0; i < function->parameters.count; i++)
@@ -545,7 +574,9 @@ Error *SemanticAnylsis(TreeNode *AST)
             TreeNode *expressionNode = (TreeNode *)TreeGetNodeConstant(currentNode, (uint8_t[]){1, 0}, 2);
             if (expressionNode != NULL)
             {
-                if (((Token *)expressionNode->content)->type == TERM_OFFSET + EXPRESSION)
+                printf("expression node is not null\n");
+                char *exprTokenValue = ((Token *)expressionNode->content)->value;
+                if (*((uint8_t *)exprTokenValue) == TERM_OFFSET + EXPRESSION)
                 {
                     printf("return has expression\n");
                     delay(100);
@@ -554,13 +585,21 @@ Error *SemanticAnylsis(TreeNode *AST)
                     {
                         goto exit;
                     }
-                    TreeNode *stackNode = TreeGetNodeConstant(currentNode, (uint8_t[]){1, 0, 0}, 3);
+                    TreeNode *stackNode = TreeGetNodeConstant(expressionNode, (uint8_t[]){0}, 1);
                     Token *tokenPointer = (Token *)stackNode->content;
                     uint16_t stackPointerIndex = 0;
                     sscanf(tokenPointer->value, "%hu", &stackPointerIndex);
-                    uint32_t offset = ((StackPointer *)ListGetIndex((GeneralList *)PeekList(scopes), stackPointerIndex))->offset;
+                    uint32_t offset = ((StackPointer *)ListGetIndex(&((Scope *)PeekList(scopes))->symbols, stackPointerIndex))->offset;
                     ASM_StackLoad(A0, offset * 4);
                 }
+                else
+                {
+                    printf("nevermind\n");
+                }
+            }
+            else
+            {
+                printf("No expr node\n");
             }
 
             ASM_JumpString("functionReturn");
@@ -589,10 +628,10 @@ Error *SemanticAnylsis(TreeNode *AST)
             ASM_Branch("beq", T1, X0, label);
 
             TreeNode *elseRestNode = TreeGetNodeConstant(currentNode, (uint8_t[]){0, 0}, 2);
-            if (elseRestNode != NULL)
+            if (elseRestNode != NULL && elseRestNode->children.count > 0)
             {
                 // is an else
-                // 
+                //
                 // beq -> L0
                 //      (body)
                 // J L1
@@ -619,6 +658,10 @@ Error *SemanticAnylsis(TreeNode *AST)
 
                 label = endLabel;
             }
+            else
+            {
+                printf("no if");
+            }
 
             ScopeOpenContext(BRANCH_SCOPE);
 
@@ -630,8 +673,9 @@ Error *SemanticAnylsis(TreeNode *AST)
             PushByte(&exploreMap, 4);
             continue;
         }
-        if (*((uint8_t *)value) == TERM_OFFSET + ELSE)
+        if (*((uint8_t *)value) == TERM_OFFSET + ELSE && currentNode->children.count > 1)
         {
+            printf("Else has %d children\n", currentNode->children.count);
             if (currentNode->children.count != 4)
             {
                 printf("Else missing marker pinned by If\n");
@@ -644,13 +688,13 @@ Error *SemanticAnylsis(TreeNode *AST)
             TreeNode *elseLabelNode = (TreeNode *)PopList(&currentNode->children);
             uint32_t *elseLabel = (uint32_t *)elseLabelNode->content;
 
-            //closes the if statement
+            // closes the if statement
             CloseScopeContext();
 
             ASM_Jump(*endLabel);
             ASM_Label(*elseLabel);
-            
-            //opens the else
+
+            // opens the else
             ScopeOpenContext(BRANCH_SCOPE);
             // is closed by the if (outer)
         }
@@ -894,16 +938,34 @@ Error *SemanticAnylsis(TreeNode *AST)
                             delay(100);
                             PushList(&parameters, expression);
                             parameterNode = (TreeNode *)PeekListFirst(&parameterNode->children);
+
+                            // I dont know
+                            // the expression is not solved for light(random())
+
+                            /*
+                            EvaluateExpression(error, currentNode, &variableStack);
+            if (error->errorCode != NO_ERROR)
+            {
+                goto exit;
+            }
+                            */
                         }
                         printf("All parameters found");
                         delay(100);
                         ASM_Imm(S0, parameters.count * 4 + 4);
                         ASM_Move(S0, A2);
                         ASM_JumpStringAndLink(S2, "push");
+
                         for (int i = 0; i < parameters.count; i++)
                         {
-                            Token *token = (Token *)((TreeNode *)ListGetIndex(&parameters, i))->content;
-                            LoadParameter(error, token, S0, &variableStack);
+                            TreeNode *expressionNode = (TreeNode *)ListGetIndex(&parameters, i);
+
+                            Token *tokenPointer = (Token *)expressionNode->content;
+                            uint16_t stackPointerIndex = 0;
+                            sscanf(tokenPointer->value, "%hu", &stackPointerIndex);
+                            uint32_t offset = ((StackPointer *)ListGetIndex(&((Scope *)PeekList(scopes))->symbols, stackPointerIndex))->offset;
+                            ASM_StackLoad(S0, offset * 4);
+
                             ASM_JumpStringAndLink(S2, "push");
                         }
 

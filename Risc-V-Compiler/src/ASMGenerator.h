@@ -248,6 +248,10 @@ void CallFunction(Identifier *function)
         ASM_LoadAddressString(A1, "malloc");
         ASM_JumpStringAndLink(A7, "callFunction");
         break;
+    case MEM_WRITE:
+        ASM_LoadAddressString(A1, "memWrite");
+        ASM_JumpStringAndLink(A7, "callFunction");
+        break;
     default:
         ASM_LoadAddress(A1, function->labelNumber);
         ASM_JumpStringAndLink(A7, "callFunction");
@@ -520,7 +524,28 @@ void PostfixToASM(Error *error, GeneralList *postfix, GeneralList *variableStack
     printf("\n");
     if (postfix->count == 1)
     {
-        LoadParameter(error, (Token *)PopList(postfix), T1, variableStack);
+        Token *token = (Token *)PeekList(postfix);
+        if (token->type == IDENTIFIER)
+        {
+            Identifier *function = NULL;
+            printf("Single identifier, checking if its a function\n");
+            for (int i = 0; i < variableStack->count; i++)
+            {
+                Identifier *checkIdentifier = (Identifier *)ListGetIndex(variableStack, i);
+                if (strcmp(checkIdentifier->name, token->value) == 0)
+                {
+                    function = checkIdentifier;
+                    break;
+                }
+            }
+            if (function->funcOrVar == FUNCTION)
+            {
+                printf("Is function, switching to normal parsing\n");
+                goto isFunction;
+            }
+        }
+        PopList(postfix);
+        LoadParameter(error, token, T1, variableStack);
         ASM_StackPush(T1);
         UpdateStackList("TEMP", STACK_POINTER);
 
@@ -534,6 +559,7 @@ void PostfixToASM(Error *error, GeneralList *postfix, GeneralList *variableStack
         PushList(postfix, newToken);
     }
     else
+    isFunction:
         while (true)
         {
             if (index >= postfix->count)
@@ -680,7 +706,7 @@ void PostfixToASM(Error *error, GeneralList *postfix, GeneralList *variableStack
                         printf("Div operator");
                         ASM_Math("div", T1, T2, T1);
                     }
-                    if (strcmp(currentToken->value, "%%") == 0)
+                    if (strcmp(currentToken->value, "%") == 0)
                     {
                         printf("%% operator");
                         ASM_Math("rem", T1, T2, T1);
@@ -755,13 +781,24 @@ void PostfixToASM(Error *error, GeneralList *postfix, GeneralList *variableStack
                         printf("^ operator");
                         ASM_Math("xor", T1, T2, T1);
                     }
+                    if (strcmp(currentToken->value, "<<") == 0)
+                    {
+                        printf("<< operator");
+                        ASM_Math("sll", T1, T2, T1);
+                    }
+                    if (strcmp(currentToken->value, ">>") == 0)
+                    {
+                        printf("<< operator");
+                        ASM_Math("srl", T1, T2, T1);
+                    }
                 }
                 if (operator->parameters == 1)
                 {
                     if (strcmp(currentToken->value, "u*") == 0)
                     {
                         printf("Dereference operator");
-                        ASM_Math("add", T1, T0, T1);
+                        ASM_Math("add", T1, GP, T1);
+                        ASM_MathI("addi", T1, T1, HEAP_ADDR);
                         ASM_LoadFromRegister(T1, T1);
                     }
                     if (strcmp(currentToken->value, "u-") == 0)

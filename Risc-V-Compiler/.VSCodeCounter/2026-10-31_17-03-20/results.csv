@@ -1,0 +1,17 @@
+"filename", "language", "C++", "C", "comment", "blank", "total"
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\ASMGenerator.h", "C++", 801, 0, 39, 37, 877
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\ASMTemplate.h", "C++", 282, 0, 0, 70, 352
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\CFG.h", "C++", 432, 0, 38, 7, 477
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Common.h", "C++", 239, 0, 5, 28, 272
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Common\BinaryTree.h", "C++", 147, 0, 7, 12, 166
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Common\GeneralList.h", "C++", 248, 0, 19, 43, 310
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Common\Keywords.h", "C++", 112, 0, 3, 23, 138
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\ErrorFormatter.h", "C++", 75, 0, 2, 9, 86
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Lexer.h", "C++", 196, 0, 9, 18, 223
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Risc-V-Compiler.c", "C", 0, 222, 1, 21, 244
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\SemanticAnalyzer.h", "C++", 829, 0, 107, 107, 1043
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\SpecialParser.h", "C++", 297, 0, 4, 29, 330
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\SyntaxAnalyzer.h", "C++", 286, 0, 14, 28, 328
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Tools\BinaryTree.h", "C++", 49, 0, 2, 6, 57
+"c:\Users\kphoh\Documents\GitHub\Risc-V-Compiler\Risc-V-Compiler\src\Tools\GeneralList.h", "C++", 170, 0, 17, 35, 222
+"Total", "-", 4163, 222, 267, 473, 5125

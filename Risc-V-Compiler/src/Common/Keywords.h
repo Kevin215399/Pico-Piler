@@ -51,6 +51,8 @@ char *operators[] = {
     "==",
     "<=",
     ">=",
+    "<<",
+    ">>",
     "<",
     ">",
     "=",
@@ -65,14 +67,14 @@ char *operators[] = {
     "-=",
     "*=",
     "/=",
-    "%%=",
+    "%=",
     "^=",
 
     "+",
     "-",
     "*",
     "/",
-    "%%",
+    "%",
 
     "!",
     "~",
@@ -95,13 +97,18 @@ char *literals[] = {
     "NULL",
 };
 OperatorPrecedence OPERATOR_PRECEDENT_LIST[] = {
+    
 
-    {"%%", 7, 2, false},
-    {"*", 7, 2, false},
-    {"/", 7, 2, false},
+    {"%", 8, 2, false},
+    {"*", 8, 2, false},
+    {"/", 8, 2, false},
 
-    {"-", 6, 2, false},
-    {"+", 6, 2, false},
+    {"-", 7, 2, false},
+    {"+", 7, 2, false},
+
+    
+    {">>", 6, 2, false},
+    {"<<", 6, 2, false},
 
     {">=", 5, 2, false},
     {"<=", 5, 2, false},
@@ -119,11 +126,11 @@ OperatorPrecedence OPERATOR_PRECEDENT_LIST[] = {
     {"||", 1, 2, false},
     {"|", 1, 2, false},
 
-    {"u~", 8, 1, true},
-    {"u!", 8, 1, true},
-    {"u-", 8, 1, true}, // - unary
-    {"u&", 8, 1, true}, // & unary
-    {"u*", 8, 1, true}, // * unary
+    {"u~", 9, 1, true},
+    {"u!", 9, 1, true},
+    {"u-", 9, 1, true}, // - unary
+    {"u&", 9, 1, true}, // & unary
+    {"u*", 9, 1, true}, // * unary
 };
 #define OPERATOR_PRECEDENT_COUNT sizeof(OPERATOR_PRECEDENT_LIST) / sizeof(OperatorPrecedence)
 

@@ -50,11 +50,17 @@ Error *ShuntYard(GeneralList *tokens, GeneralList *variableStack, GeneralList *o
     GeneralList functionCalls;
     InitializeList(&functionCalls);
 
+    Token *lastToken = NULL;
+    Token *currentToken = NULL;
+
     while (tokens->count > 0)
     {
         printf("loop start, %d left\n", tokens->count);
+        printf("\n");
         delay(100);
-        Token *currentToken = (Token *)PopListFirst(tokens);
+        
+        lastToken = currentToken;
+        currentToken = (Token *)PopListFirst(tokens);
         switch (currentToken->type)
         {
         case SEPERATOR:
@@ -169,15 +175,16 @@ Error *ShuntYard(GeneralList *tokens, GeneralList *variableStack, GeneralList *o
                 SetError(error, SYNTAX_ERROR, SPECIAL_PARSER, "Cannot do math within a cast, use (type pointer)variable", 0);
                 goto exit;
             }
-            printf("operator token\n");
+            printf("operator token: %s\n", currentToken->value);
+
             PrecedenceWrapper *wrapped = (PrecedenceWrapper *)malloc(sizeof(PrecedenceWrapper));
             wrapped->token = currentToken;
 
             uint8_t parameters = 2;
-            Token *lastOutput = (Token *)PeekList(outputStack);
-            if (lastOutput == NULL || lastOutput->type == OPERATOR)
+            if (lastToken == NULL || lastToken->type == OPERATOR || strcmp(lastToken->value,"(") ==0)
             {
                 // Two operators next to each other, means this one is unary
+                printf("Is unary\n");
                 parameters = 1;
             }
             wrapped->parameters = parameters;

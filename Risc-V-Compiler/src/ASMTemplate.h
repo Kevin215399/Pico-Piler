@@ -157,7 +157,7 @@ functionReturn:
 malloc:
   lw s0, 4(t0)
   #memory index
-  mv t2, gp
+  li t2, 0
   mallocResetCount:
   #memory amount
   addi t3, x0, 0
@@ -165,6 +165,7 @@ malloc:
     # t4 has the byte address
     srli t4, t2, 3
     # t4 has the byte data
+    add t4, t4, gp
     lb t4, 0(t4)
     #t5 has the bit address
     andi t5, t2, 7
@@ -183,6 +184,7 @@ malloc:
     addi t3, t3, -1
     addi t2, t2, -1
     srli t4, t2, 3
+    add t4, t4, gp
     # t4 has the byte data
     lb t4, 0(t4)
     #t5 has the bit address
@@ -191,11 +193,23 @@ malloc:
     srl t5, t6, t5
     #t5 has mask
     srli t6, t2, 3
+    add t6, t6, gp
     or t4, t4, t5
     sb t4, 0(t6)
 
     blt x0, t3, mallocBlockLoop
   mv a0, t2
+
+  j functionReturn
+  
+memWrite:
+  lw a0, 4(t0)
+  lw a1, 8(t0)
+
+  add a0, a0, gp
+  addi a0, a0, 1116
+
+  sw a1, 0(a0)
 
   j functionReturn
 

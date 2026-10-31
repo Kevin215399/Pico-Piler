@@ -1,7 +1,7 @@
 #ifndef CFG_h
 #define CFG_h
 
-const char *NonTerms[] = {"uint8_t", "uint16_t", "uint32_t", "int8_t", "int16_t", "int", "char", "bool", "void", "", "while", "for", "if", "IDENTIFIER", "return", "break", "}", "*", ")", "[", ";", "(", "=", ",", "else", "{", "-", "~", "&", "!", "LITERAL", "+=", "-=", "*=", "/=", "^=", "%%="};
+const char *NonTerms[] = {"uint8_t", "uint16_t", "uint32_t", "int8_t", "int16_t", "int", "char", "bool", "void", "", "while", "for", "if", "IDENTIFIER", "return", "break", "}", "*", ")", "[", ";", "(", "=", ",", "else", "{", "-", "~", "&", "!", "LITERAL", "+=", "-=", "*=", "/=", "^=", "%="};
 #define GLOBAL_BODY 0
 #define GLOBAL_LINE 1
 #define BODY 2
@@ -117,7 +117,7 @@ void SetupCFG()
         Transformations required from excel sheet
         , 0) -> , "*") and nonterm
         "e" -> ""
-        "%=" -> "%%="
+        "%=" -> "%="
     */
 
     // GLOBAL_BODY
@@ -432,7 +432,7 @@ void SetupCFG()
     AddNonTerm(22, 34, 25);
     AddTerm(22, 35, "^=");
     AddNonTerm(22, 35, 25);
-    AddTerm(22, 36, "%%=");
+    AddTerm(22, 36, "%=");
     AddNonTerm(22, 36, 25);
     // CALL
     AddTerm(23, 21, "");
@@ -442,6 +442,8 @@ void SetupCFG()
     // CALL_PARAM
     AddNonTerm(24, 13, 25);
     AddNonTerm(24, 13, 24);
+    AddNonTerm(24,17,25); 
+    AddNonTerm(24,17,24);
     AddTerm(24, 18, "");
     AddNonTerm(24, 21, 25);
     AddNonTerm(24, 21, 24);
