@@ -34,23 +34,25 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
 
     while (stack.count > 0)
     {
-        printf("Stack count: %d\n", stack.count);
-        printf("tree map:");
+        debugPrintf("Stack count: %d\n", stack.count);
+        debugPrintf("tree map:");
         for (int i = 0; i < treeNavStack.count; i++)
         {
-            printf("%d", (int)*(uint8_t *)ListGetIndex(&treeNavStack, i));
+            debugPrintf("%d", (int)*(uint8_t *)ListGetIndex(&treeNavStack, i));
         }
-        printf("\n");
+        debugPrintf("\n");
+        delay(100);
+
         if (stack.count == 0 && tokens->count == 0)
         {
-            printf("Parse success");
+            debugPrintf("Parse success");
             break;
         }
         Token *stackToken = stack.lastElement->content;
 
         if (stackToken == NULL)
         {
-            printf("NULL\n");
+            debugPrintf("NULL\n");
             delay(100);
             SetError(error, UNEXPECTED_NULL, SYNTAX_ANALYZER, "Lowkey, I don't even know what this means. Stacktoken is null", 0);
             goto exit;
@@ -58,14 +60,14 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
         uint8_t *top = stackToken->value;
         if (top == NULL)
         {
-            printf("NULL\n");
+            debugPrintf("NULL\n");
             SetError(error, UNEXPECTED_NULL, SYNTAX_ANALYZER, "Lowkey, I don't even know what this means. Stacktoken is null", 0);
             goto exit;
         }
         // If epsilon then pop stack
         if ((*top) == '\0')
         {
-            printf("epsilon\n");
+            debugPrintf("epsilon\n");
             Token *delToken = (Token *)PopList(&stack);
             free(delToken->value);
             free(delToken);
@@ -73,12 +75,12 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
             // Go to the next left node
             while ((*topValue) == 0)
             {
-                printf("tree pop up\n");
+                debugPrintf("tree pop up\n");
                 free(PopList(&treeNavStack));
                 if (treeNavStack.count == 0)
                 {
                     // Reached root node
-                    printf("tree root found, exitting\n");
+                    debugPrintf("tree root found, exitting\n");
                     break;
                 }
                 topValue = (uint8_t *)PeekList(&treeNavStack);
@@ -96,7 +98,7 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
         isMatch = (*top) < 128 && (strcmp((char *)top, token->value) == 0);
         if ((*top) >= 128)
         {
-            printf("top >= 128 \n");
+            debugPrintf("top >= 128 \n");
             if ((*top) - TERM_OFFSET == IDENTIFIER_TERM && token->type == IDENTIFIER)
                 isMatch = true;
             if ((*top) - TERM_OFFSET == LITERAL_TERM && token->type == LITERAL)
@@ -106,14 +108,14 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
 
             if ((*top) == EXPRESSION + TERM_OFFSET)
             {
-                printf("Expression\n");
+                debugPrintf("Expression\n");
                 uint8_t parenthesis = 0;
-                GeneralList expressionTokens;
-                InitializeList(&expressionTokens);
-
+                uint16_t tokensCount = 0;
                 while (token->value[0] != ';')
                 {
-                    if(token->value[0]==',' && parenthesis == 0){
+                    uint16_t lineNumber = token->lineNumber;
+                    if (token->value[0] == ',' && parenthesis == 0)
+                    {
                         break;
                     }
                     if (token->value[0] == '(' || token->value[0] == '[')
@@ -128,21 +130,35 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
                         }
                         parenthesis--;
                     }
-                    printf("expression scope, pop %s\n", token->value);
+                    debugPrintf("expression scope, pop %s\n", token->value);
                     for (int i = 0; i < treeNavStack.count; i++)
                     {
-                        printf("%d", *(uint8_t *)ListGetIndex(&treeNavStack, i));
+                        debugPrintf("%d", *(uint8_t *)ListGetIndex(&treeNavStack, i));
                     }
+                    tokensCount++;
                     AppendTreeFromRoot(output, &treeNavStack, (Token *)PopListFirst(tokens));
 
                     token = (Token *)PeekListFirst(tokens);
+
+                    if (token == NULL)
+                    {
+                        debugPrintf("Expr error\n");
+                        SetError(error, SYNTAX_ERROR, SYNTAX_ANALYZER, "Missing closer after expression", lineNumber);
+                        goto exit;
+                    }
                 }
-                printf("Pop expression\n");
+                if (tokensCount == 0)
+                {
+                    SetError(error, SYNTAX_ERROR, SYNTAX_ANALYZER, "Expected an expression", token->lineNumber);
+                    goto exit;
+                }
+
+                debugPrintf("Pop expression\n");
 
                 isMatch = true;
             }
         }
-        printf("Stack Top: %d\n", *top);
+        debugPrintf("Stack Top: %d\n", *top);
 
         if (isMatch)
         {
@@ -153,7 +169,7 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
                     ((*top) - TERM_OFFSET == LITERAL_TERM && token->type == LITERAL) ||
                     ((*top) - TERM_OFFSET == TYPE_TERM && token->type == TYPE))
                 {
-                    printf("literal, appending child as literal");
+                    debugPrintf("literal, appending child as literal");
                     AppendTreeFromRoot(output, &treeNavStack, PopListFirst(tokens));
                 }
             }
@@ -164,25 +180,25 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
                 free(delToken);
             }
 
-            printf("Match, pop: %s\n", token->value);
-            printf("popping token...");
+            debugPrintf("Match, pop: %s\n", token->value);
+            debugPrintf("popping token...");
             Token *delToken = (Token *)PopList(&stack);
             free(delToken->value);
             free(delToken);
-            printf("popped\n");
+            debugPrintf("popped\n");
 
             uint8_t *topValue = (uint8_t *)PeekList(&treeNavStack);
-            printf("sibling index count: %d\n", (int)*topValue);
+            debugPrintf("sibling index count: %d\n", (int)*topValue);
 
             // Go to the next left node
             while ((*topValue) == 0)
             {
-                printf("tree pop up\n");
+                debugPrintf("tree pop up\n");
                 free(PopList(&treeNavStack));
                 if (treeNavStack.count == 0)
                 {
                     // Reached root node
-                    printf("tree root found, exitting\n");
+                    debugPrintf("tree root found, exitting\n");
                     goto exit;
                 }
                 topValue = (uint8_t *)PeekList(&treeNavStack);
@@ -200,35 +216,35 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
             }
             else
             {
-                printf("finding match for %s\n", token->value);
+                debugPrintf("finding match for %s\n", token->value);
                 matchingTerm = GetTermIndex(token->value);
                 if (token->type == IDENTIFIER)
                 {
-                    printf("Term is identifier\n");
+                    debugPrintf("Term is identifier\n");
                     matchingTerm = GetTermIndex("IDENTIFIER");
                 }
                 if (token->type == LITERAL)
                 {
-                    printf("Term is literal\n");
+                    debugPrintf("Term is literal\n");
                     matchingTerm = GetTermIndex("LITERAL");
                 }
                 if (matchingTerm == 255)
                 {
-                    printf("ErrorA\n");
+                    debugPrintf("ErrorA\n");
                     SetError(error, SYNTAX_ERROR, SYNTAX_ANALYZER, "Unexpected syntax", 0);
                     goto exit;
                 }
             }
 
-            printf("Finding rule %d, %d\n", matchingTerm, (*top) - TERM_OFFSET);
+            debugPrintf("Finding rule %d, %d\n", matchingTerm, (*top) - TERM_OFFSET);
             uint16_t ruleIndex = FindRuleInCFG(matchingTerm, (*top) - TERM_OFFSET);
 
             if (ruleIndex == (uint16_t)(-1))
             {
-                printf("ErrorC no matching rule\n");
+                debugPrintf("ErrorC no matching rule\n");
                 for (int i = 0; i < tokens->count; i++)
                 {
-                    printf("%s\n", ((Token *)ListGetIndex(tokens, i))->value);
+                    debugPrintf("%s\n", ((Token *)ListGetIndex(tokens, i))->value);
                 }
                 SetError(error, SYNTAX_ERROR, SYNTAX_ANALYZER, "Unexpected syntax", 0);
                 goto exit;
@@ -240,19 +256,19 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
             free(delToken->value);
             free(delToken);
 
-            printf("push to tree map:");
+            debugPrintf("push to tree map:");
             for (int i = 0; i < treeNavStack.count; i++)
             {
-                printf("%d", (int)*(uint8_t *)ListGetIndex(&treeNavStack, i));
+                debugPrintf("%d", (int)*(uint8_t *)ListGetIndex(&treeNavStack, i));
             }
-            printf("\n");
+            debugPrintf("\n");
             for (int i = rule->count - 1; i >= 0; i--)
             {
                 char *newRule = (char *)ListGetIndex(rule, i);
-                printf("Push rule %d\n", (int)(*newRule));
+                debugPrintf("Push rule %d\n", (int)(*newRule));
                 if ((*newRule) >= 128)
                 {
-                    printf("%d\n", (*newRule) - TERM_OFFSET);
+                    debugPrintf("%d\n", (*newRule) - TERM_OFFSET);
                     // Push it to the analyzer stack
                     newToken = (Token *)malloc(sizeof(Token));
                     newToken->lineNumber = token->lineNumber;
@@ -271,7 +287,7 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
                 }
                 if ((*newRule) < 128)
                 {
-                    printf("%s\n", newRule);
+                    debugPrintf("%s\n", newRule);
 
                     // Push it to the analyzer stack
                     newToken = (Token *)malloc(sizeof(Token));
@@ -296,32 +312,33 @@ Error *AnalyzeSyntax(GeneralList *tokens, TreeNode *output)
                 PushByte(&treeNavStack, rule->count - 1);
             }
 
-            printf("OK\n");
+            debugPrintf("OK\n");
         }
         else
         {
-            printf("ErrorB\n");
+            debugPrintf("ErrorB\n");
             SetError(error, SYNTAX_ERROR, SYNTAX_ANALYZER, "Unexpected syntax", 0);
             goto exit;
         }
     }
 
-    return error;
 exit:
-    // printf("%d\n", (int)((TreeNode *)output->children.firstElement->content)->children.count);
+    // debugPrintf("%d\n", (int)((TreeNode *)output->children.firstElement->content)->children.count);
     for (int i = 0; i < stack.count; i++)
     {
         Token *delToken = (Token *)PopList(&stack);
-        free(delToken->value);
+        if (delToken->value != NULL)
+            free(delToken->value);
         free(delToken);
     }
     for (int i = 0; i < tokens->count; i++)
     {
         Token *delToken = (Token *)PopList(tokens);
-        free(delToken->value);
+        if (delToken->value != NULL)
+            free(delToken->value);
         free(delToken);
     }
-    ClearTree(output);
+    EmptyList(&treeNavStack);
     return error;
 }
 

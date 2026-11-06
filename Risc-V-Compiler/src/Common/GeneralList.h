@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../Common.h"
 
 typedef struct GeneralListNode
 {
@@ -28,22 +29,22 @@ void InitializeList(GeneralList *list)
 
 void PushList(GeneralList *list, void *content)
 {
-    // printf("list passed\n");
+    // printfAlways("list passed\n");
     if (list == NULL)
     {
-        printf("list is null\n");
+        printfAlways("list is null\n");
         return;
     }
     if (list->lastElement == NULL)
     {
-        // printf("createing first\n");
+        // printfAlways("createing first\n");
         list->firstElement = (GeneralListNode *)malloc(sizeof(GeneralListNode));
-        // printf("createing malloced\n");
+        // printfAlways("createing malloced\n");
         list->lastElement = list->firstElement;
         list->lastElement->next = NULL;
         list->lastElement->previous = NULL;
         list->count = 1;
-        // printf("done\n");
+        // printfAlways("done\n");
     }
     else
     {
@@ -81,7 +82,7 @@ void *PopList(GeneralList *list)
         return NULL;
 
     void *content = list->lastElement->content;
-    // printf("got content\n");
+    // printfAlways("got content\n");
 
     if (list->count > 1)
     {
@@ -107,7 +108,7 @@ void *PopListFirst(GeneralList *list)
         return NULL;
 
     void *content = list->firstElement->content;
-    // printf("got content\n");
+    // printfAlways("got content\n");
 
     if (list->count > 1)
     {
@@ -131,18 +132,18 @@ void *ListGetIndex(GeneralList *list, int index)
 {
     if (index >= list->count)
     {
-        printf("out of bounds\n");
+        printfAlways("out of bounds\n");
         return NULL;
     }
 
     GeneralListNode *currentNode = list->firstElement;
-    // printf("ggot\n");
+    // printfAlways("ggot\n");
     for (int i = 0; i < index; i++)
     {
-        // printf("next\n");
+        // printfAlways("next\n");
         currentNode = currentNode->next;
     }
-    // printf("returning");
+    // printfAlways("returning");
     return currentNode->content;
 }
 
@@ -150,37 +151,37 @@ void *DeleteListElement(GeneralList *list, int index)
 {
     if (index >= list->count)
     {
-        printf("out of bounds\n");
+        printfAlways("out of bounds\n");
         return NULL;
     }
 
     GeneralListNode *currentNode = list->firstElement;
-    // printf("ggot\n");
+    // printfAlways("ggot\n");
     for (int i = 0; i < index; i++)
     {
-        // printf("next\n");
+        // printfAlways("next\n");
         currentNode = currentNode->next;
     }
 
-    // printf("found\n");
+    // printfAlways("found\n");
 
     list->count--;
 
     if (currentNode->previous != NULL && currentNode->next != NULL)
     {
-        // printf("prev and next\n");
+        // printfAlways("prev and next\n");
         currentNode->previous->next = currentNode->next;
         currentNode->next->previous = currentNode->previous;
     }
     else if (currentNode->previous != NULL)
     {
-        // printf("prev\n");
+        // printfAlways("prev\n");
         currentNode->previous->next = NULL;
         list->lastElement = currentNode->previous;
     }
     else if (currentNode->next != NULL)
     {
-        // printf("next\n");
+        // printfAlways("next\n");
         currentNode->next->previous = NULL;
         list->firstElement = currentNode->next;
     }
@@ -190,13 +191,13 @@ void *DeleteListElement(GeneralList *list, int index)
         list->lastElement = NULL;
     }
 
-    // printf("stitched list\n");
+    // printfAlways("stitched list\n");
 
     void *content = currentNode->content;
 
     free(currentNode);
 
-    // printf("freed node \n");
+    // printfAlways("freed node \n");
     return content;
 }
 
@@ -204,7 +205,7 @@ void TransferList(GeneralList *to, GeneralList *from)
 {
     while (from->count > 0)
     {
-        printf("transfered list element\n");
+        printfAlways("transfered list element\n");
         PushList(to, DeleteListElement(from, 0));
     }
 }
@@ -233,21 +234,21 @@ void EmptyList(GeneralList *list)
 
 void ListInsert(GeneralList *list, uint16_t index, void *content)
 {
-    // printf("list passed\n");
+    // printfAlways("list passed\n");
     if (list == NULL)
     {
-        printf("list is null\n");
+        printfAlways("list is null\n");
         return;
     }
     if (index > list->count)
     {
-        printf("insert out of bounds\n");
+        printfAlways("insert out of bounds\n");
         return;
     }
 
     if (list->lastElement == NULL)
     {
-        // printf("createing first\n");
+        // printfAlways("createing first\n");
         list->firstElement = (GeneralListNode *)malloc(sizeof(GeneralListNode));
         list->lastElement = list->firstElement;
         list->lastElement->next = NULL;

@@ -52,7 +52,7 @@ void SetError(Error *reference, ErrorCode error, Location location, char *messag
 char *FormatError(Error *error)
 {
     char *output = NULL;
-    uint8_t errorLength = 0;
+    uint16_t errorLength = 0;
     if (error->errorCode == NO_ERROR)
     {
         errorLength = strlen(ERR_CODE_NAMES[0]);
@@ -80,7 +80,7 @@ char *FormatError(Error *error)
 }
 void PrintError(Error* error){
     char* message = FormatError(error);
-    printf("%s\n",message);
+    printf("An error was generated:\n%s\n",message);
     free(message);
 }
 #endif

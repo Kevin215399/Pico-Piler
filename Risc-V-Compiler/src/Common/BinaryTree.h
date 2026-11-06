@@ -29,16 +29,16 @@ TreeNode *TreeGetNode(TreeNode *root, GeneralList *navMap)
     for (int i = 0; i < navMap->count; i++)
     {
         uint8_t *child = (uint8_t *)ListGetIndex(navMap, i);
-        // printf("navigate: %d\n", (int)(*child));
+        // debugPrintf("navigate: %d\n", (int)(*child));
         if ((*child) >= currentNode->children.count)
         {
-            printf("navigate fail\n");
-            printf("only has %d children\n", currentNode->children.count);
+            debugPrintf("navigate fail\n");
+            debugPrintf("only has %d children\n", currentNode->children.count);
             return NULL;
         }
         currentNode = (TreeNode *)ListGetIndex(&currentNode->children, (*child));
     }
-    // printf("navigate sucess\n");
+    // debugPrintf("navigate sucess\n");
     return currentNode;
 }
 TreeNode *TreeGetNodeConstant(TreeNode *root, uint8_t *navMap, uint8_t listLength)
@@ -49,8 +49,8 @@ TreeNode *TreeGetNodeConstant(TreeNode *root, uint8_t *navMap, uint8_t listLengt
         uint8_t child = navMap[i];
         if (child >= currentNode->children.count)
         {
-            printf("navigate fail\n");
-            printf("only has %d children\n", currentNode->children.count);
+            debugPrintf("navigate fail\n");
+            debugPrintf("only has %d children\n", currentNode->children.count);
             return NULL;
         }
         currentNode = (TreeNode *)ListGetIndex(&currentNode->children, child);
@@ -64,21 +64,21 @@ TreeNode *TreeGetNodeLimited(TreeNode *root, GeneralList *navMap, uint8_t maxIns
     for (int i = 0; i < iterations; i++)
     {
         uint8_t *child = (uint8_t *)ListGetIndex(navMap, i);
-        // printf("navigate: %d\n", (int)(*child));
+        // debugPrintf("navigate: %d\n", (int)(*child));
         if ((*child) >= currentNode->children.count)
         {
-            printf("navigate fail\n");
-            printf("only has %d children\n", currentNode->children.count);
+            debugPrintf("navigate fail\n");
+            debugPrintf("only has %d children\n", currentNode->children.count);
             return NULL;
         }
         currentNode = (TreeNode *)ListGetIndex(&currentNode->children, (*child));
     }
-    // printf("navigate sucess\n");
+    // debugPrintf("navigate sucess\n");
     return currentNode;
 }
 void AppendTree(TreeNode *parent, void *content)
 {
-    printf("pushing tree\n");
+    debugPrintf("pushing tree\n");
     TreeNode *newNode = malloc(sizeof(TreeNode));
     InitializeTree(newNode);
     newNode->content = content;
@@ -106,7 +106,6 @@ void ClearTree(TreeNode *root)
     {
         if (root->content != NULL)
             free(root->content);
-        free(root);
         return;
     }
     TreeNode *currentNode = root;
@@ -115,35 +114,34 @@ void ClearTree(TreeNode *root)
 
     while (true)
     {
-        printf("Delete tree loop: ");
+        debugPrintf("Delete tree loop: ");
         for (int i = 0; i < exploreMap.count; i++)
         {
-            printf("%d", (int)*((uint8_t *)ListGetIndex(&exploreMap, i)));
+            debugPrintf("%d", (int)*((uint8_t *)ListGetIndex(&exploreMap, i)));
         }
-        printf("\n");
+        debugPrintf("\n");
 
         if (currentNode->children.count == 0)
         {
         backtrack:
-            printf("deleting...\n");
+            debugPrintf("deleting...\n");
             if (currentNode->content != NULL)
                 free(currentNode->content);
             free(currentNode);
             uint8_t *topValue = (uint8_t *)PeekList(&exploreMap);
-            printf("Node deleted\n");
+            debugPrintf("Node deleted\n");
             // Go to the next left node
             while ((*topValue) == 0)
             {
                 // Go up
                 free(PopList(&exploreMap));
-                printf("exploring UP\n");
+                debugPrintf("exploring UP\n");
 
                 if (exploreMap.count == 0)
                 {
                     // Reached root node
                     if (root->content != NULL)
                         free(root->content);
-                    free(root);
                     return;
                 }
                 topValue = (uint8_t *)PeekList(&exploreMap);
@@ -159,7 +157,7 @@ void ClearTree(TreeNode *root)
         }
     }
 
-    printf("tree deleted");
+    debugPrintf("tree deleted");
     return;
 }
 

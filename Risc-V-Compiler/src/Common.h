@@ -1,31 +1,17 @@
 #pragma once
 
-#include <stdio.h>
-#include "math.h"
-#include "pico/stdlib.h"
-#include <string.h>
-
-#include "Common/GeneralList.h"
-#include "Common/BinaryTree.h"
-#include "Common/Keywords.h"
-
-#include "ErrorFormatter.h"
-
-extern char *sourceCode;
-
-#pragma region Objects
 
 #define NO_DEBUG 0
 #define PRINT_ONLY 1
 #define PRINT_AND_DELAY 2
 
 //change this
-#define DEBUG_MODE PRINT_ONLY
+#define DEBUG_MODE PRINT_AND_DELAY
 
+#define printfAlways(...) printf(__VA_ARGS__)
 #if DEBUG_MODE != NO_DEBUG
 
-#define debugPrintf(...) printf("DEBUG: " __VA_ARGS__)
-#define debugPrint(x) printf("%s\n", x)
+#define debugPrintf(...) printf(__VA_ARGS__)
 
 #if DEBUG_MODE == PRINT_AND_DELAY
 #define delay(x) sleep_ms(x)
@@ -42,16 +28,30 @@ extern char *sourceCode;
     do                   \
     {                    \
     } while (0)
-#define debugPrint(x) \
-    do                \
-    {                 \
-    } while (0)
+
 #define delay(x) \
     do           \
     {            \
     } while (0)
     
 #endif
+
+#include <stdio.h>
+#include "math.h"
+#include "pico/stdlib.h"
+#include <string.h>
+
+#include "Common/GeneralList.h"
+#include "Common/BinaryTree.h"
+#include "Common/Keywords.h"
+
+#include "ErrorFormatter.h"
+
+extern char *sourceCode;
+
+#pragma region Objects
+
+
 
 typedef enum StackType
 {
@@ -206,7 +206,7 @@ IdentifierType ParseType(char *input)
     }
     if (error)
     {
-        printf("!!!!!!!!! PARSETYPE() COULD NOT FIND MATCH FOR %s !!!!!!!\n", input);
+        printfAlways("!!!!!!!!! PARSETYPE() COULD NOT FIND MATCH FOR %s !!!!!!!\n", input);
     }
     return output;
 }

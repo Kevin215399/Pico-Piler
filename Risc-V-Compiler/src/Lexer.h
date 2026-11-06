@@ -20,7 +20,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
     uint16_t workingLineCount = 0;
     while (lexerIndex < strlen(code))
     {
-        printf("Lex index: %d\n", lexerIndex);
+        debugPrintf("Lex index: %d\n", lexerIndex);
         if (code[lexerIndex] == '\n')
         {
             lexerIndex++;
@@ -46,7 +46,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             {
                 tokenLength = strlen(keyword);
                 matchType = KEYWORD;
-                printf("KEYWORD len: %d\n", tokenLength);
+                debugPrintf("KEYWORD len: %d\n", tokenLength);
                 goto allocateToken;
             }
         }
@@ -60,7 +60,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             {
                 tokenLength = strlen(type);
                 matchType = TYPE;
-                printf("TYPE len: %d\n", tokenLength);
+                debugPrintf("TYPE len: %d\n", tokenLength);
                 goto allocateToken;
             }
         }
@@ -74,7 +74,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             {
                 tokenLength = strlen(operator);
                 matchType = OPERATOR;
-                printf("OPERATOR len: %d\n", tokenLength);
+                debugPrintf("OPERATOR len: %d\n", tokenLength);
                 goto allocateToken;
             }
         }
@@ -88,7 +88,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             {
                 tokenLength = 1;
                 matchType = SEPERATOR;
-                printf("SEPERATOR len: %d\n", tokenLength);
+                debugPrintf("SEPERATOR len: %d\n", tokenLength);
                 goto allocateToken;
             }
         }
@@ -103,7 +103,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             {
                 tokenLength = strlen(literal);
                 matchType = LITERAL;
-                printf("LITERAL len: %d\n", tokenLength);
+                debugPrintf("LITERAL len: %d\n", tokenLength);
                 goto allocateToken;
             }
         }
@@ -124,7 +124,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
                 goto exit;
             }
             tokenLength++;
-            printf("LITERAL len: %d\n", tokenLength);
+            debugPrintf("LITERAL len: %d\n", tokenLength);
 
             matchType = LITERAL;
             goto allocateToken;
@@ -149,7 +149,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
                     }
                 }
             }
-            printf("LITERAL len: %d\n", tokenLength);
+            debugPrintf("LITERAL len: %d\n", tokenLength);
 
             matchType = LITERAL;
             goto allocateToken;
@@ -169,7 +169,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
                     break;
                 }
             }
-            printf("Identifier len: %d\n", tokenLength);
+            debugPrintf("Identifier len: %d\n", tokenLength);
 
             matchType = IDENTIFIER;
             goto allocateToken;
@@ -178,7 +178,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
     allocateToken:
         if (matchType != NONE)
         {
-            printf("CreateToken\n");
+            debugPrintf("CreateToken\n");
 
             Token *token = (Token *)malloc(sizeof(Token));
             token->type = matchType;
@@ -190,7 +190,7 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             lexerIndex += tokenLength;
             PushList(output, token);
 
-            printf("done token\n");
+            debugPrintf("done token\n");
         }
     }
 
@@ -200,17 +200,17 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
         Token *token = (Token *)ListGetIndex(output, i);
         if (token->type != IDENTIFIER)
             continue;
-        printf("%s is identifier\n", token->value);
+        debugPrintf("%s is identifier\n", token->value);
         for (int x = 0; x < sizeof(compilerDirectives) / sizeof(CompilerDirective); x++)
         {
             if (strcmp(token->value, compilerDirectives[x].source) == 0)
             {
-                printf("%s is match\n", compilerDirectives[x].source);
+                debugPrintf("%s is match\n", compilerDirectives[x].source);
                 free(token->value);
                 token->value = (char *)malloc(strlen(compilerDirectives[x].replacement) + 1);
                 strcpy(token->value, compilerDirectives[x].replacement);
                 token->type = LITERAL;
-                printf("new Value: %s\n", token->value);
+                debugPrintf("new Value: %s\n", token->value);
                 break;
             }
         }
