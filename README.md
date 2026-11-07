@@ -15,11 +15,13 @@ I HIGHLY encourage you to check this video out: https://www.youtube.com/watch?v=
 
 A) On the online simulator
 <br>
+    &emsp;Go to this online simulator, Wokwi: https://wokwi.com/projects/479710414783977473<br>
     &emsp;Click the green play button. A console should open, if not click the bottom right corner.<br>
     &emsp;Resize the console to better see the prompts
 
 B) Using a Pico 2
 <br>
+    &emsp;Download the UF2 file under Risc-V-Compiler -> Compiled build -> Risc-V-Compiler.UF2
     &emsp;Plug in a Pico 2 in bootsel mode, and drag the UF2 file to the pico drive. <br>
     &emsp;Open a console with Pico SDK or an IDE of your choice and follow the prompts
 <br><br>
