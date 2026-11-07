@@ -1,4 +1,4 @@
-<h1>Pico-Piler</h1>
+<h1>< Pico-Piler ></h1>
 
 <h2>--- Overview ---</h2>
 The Pico-Piler is a compiler designed to translate C code into Risc-V assembly. 
@@ -9,7 +9,7 @@ It runs on a singular Pico 2
 \
 <img width="636" height="356" alt="Screenshot 2026-10-31 233343" src="https://github.com/user-attachments/assets/fcac752c-2ce4-4c9a-aeef-c30c1d580306" />
 \
-For more info, check out this visual demo: https://www.youtube.com/watch?v=wplgGrQUDOs
+I HIGHLY encourage you to check this video out: https://www.youtube.com/watch?v=wplgGrQUDOs
 
 <h2>--- How to run ---</h2>
 
