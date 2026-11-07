@@ -32,6 +32,20 @@ Error *LexicalAnylsis(char *code, GeneralList *output)
             lexerIndex++;
             continue;
         }
+        if(strncmp((&code[lexerIndex]), "//", 2) == 0){
+            debugPrintf("Found comment\n");
+            lexerIndex+=2;
+            while(true){
+                if(lexerIndex>=strlen(code)){
+                    break;
+                }
+                if(code[lexerIndex]=='\n'){
+                    break;
+                }
+                lexerIndex++;
+            }
+            continue;
+        }
 
         TokenType matchType = NONE;
         uint8_t tokenLength = 0;

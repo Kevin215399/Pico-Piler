@@ -132,7 +132,7 @@ void *ListGetIndex(GeneralList *list, int index)
 {
     if (index >= list->count)
     {
-        printfAlways("out of bounds\n");
+        debugPrintf("out of bounds\n");
         return NULL;
     }
 
@@ -151,7 +151,7 @@ void *DeleteListElement(GeneralList *list, int index)
 {
     if (index >= list->count)
     {
-        printfAlways("out of bounds\n");
+        debugPrintf("out of bounds\n");
         return NULL;
     }
 
@@ -242,7 +242,7 @@ void ListInsert(GeneralList *list, uint16_t index, void *content)
     }
     if (index > list->count)
     {
-        printfAlways("insert out of bounds\n");
+        debugPrintf("insert out of bounds\n");
         return;
     }
 

@@ -6,7 +6,7 @@
 #define PRINT_AND_DELAY 2
 
 //change this
-#define DEBUG_MODE PRINT_AND_DELAY
+#define DEBUG_MODE NO_DEBUG
 
 #define printfAlways(...) printf(__VA_ARGS__)
 #if DEBUG_MODE != NO_DEBUG

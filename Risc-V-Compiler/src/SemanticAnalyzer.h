@@ -377,18 +377,22 @@ void InitializeStdFunctions(GeneralList *variableStack)
     stdFunction->type = VOID;
     PushList(variableStack, stdFunction);
 }
-Identifier* CopyIdentifier(Identifier*source){
-    Identifier* newId = (Identifier*)malloc(sizeof(Identifier));
+Identifier *CopyIdentifier(Identifier *source)
+{
+    Identifier *newId = (Identifier *)malloc(sizeof(Identifier));
     newId->funcOrVar = source->funcOrVar;
     newId->labelNumber = source->labelNumber;
-    newId->name = malloc(strlen(source->name)+1);
+    newId->name = malloc(strlen(source->name) + 1);
     strcpy(newId->name, source->name);
-    InitializeList(&newId->parameters);
-    CpyList(&newId->parameters, &source->parameters, sizeof(Identifier));
+    if (newId->funcOrVar == FUNCTION)
+    {
+        InitializeList(&newId->parameters);
+        CpyList(&newId->parameters, &source->parameters, sizeof(Identifier));
+    }
     newId->pointerDepth = source->pointerDepth;
     newId->type = source->type;
     return newId;
-}   
+}
 Error *SemanticAnylsis(ASMProgram *program, TreeNode *AST)
 {
     debugPrintf("semantic analysis\n");
@@ -480,7 +484,7 @@ Error *SemanticAnylsis(ASMProgram *program, TreeNode *AST)
             {
                 Identifier *parameter = (Identifier *)ListGetIndex(&function->parameters, i);
                 UpdateStackList(program, parameter->name, PARAMETER);
-                Identifier* paramCopy = CopyIdentifier(parameter);
+                Identifier *paramCopy = CopyIdentifier(parameter);
                 PushList(&variableStack, paramCopy);
             }
             UpdateStackList(program, "T0", REG_STATE);
