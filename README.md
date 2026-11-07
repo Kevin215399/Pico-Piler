@@ -21,7 +21,7 @@ A) On the online simulator
 
 B) Using a Pico 2
 <br>
-    &emsp;Download the UF2 file under Risc-V-Compiler -> Compiled build -> Risc-V-Compiler.UF2
+    &emsp;Download the UF2 file under: Risc-V-Compiler -> Compiled build -> Risc-V-Compiler.UF2<br>
     &emsp;Plug in a Pico 2 in bootsel mode, and drag the UF2 file to the pico drive. <br>
     &emsp;Open a console with Pico SDK or an IDE of your choice and follow the prompts
 <br><br>
