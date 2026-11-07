@@ -1,3 +1,41 @@
+/*
+
+---- ABOUT -----
+Welcome to the Pico-Piler! :)
+
+The pico-piler is a C compiler
+This means it takes in C code, and converts it to ASM
+ASM code can be run directly on CPUs
+
+Sounds simple right? not really...
+
+ASM has no built in variables, functions, or memory management.
+So any C code must go through a complex process for a CPU to understand it
+My compiler is designed to output ASM for the Pico 2
+
+For more info, check out this visual demo: https://www.youtube.com/watch?v=wplgGrQUDOs
+
+Whoo that was a lot of info. Thanks for checking it out though!
+I spent a lot of time on this :)
+- Kevin Hoherz
+
+--- How to run -----
+
+A) On the online simulator
+    Click the green play button. A console should open, if not click the bottom right corner.
+    Resize the console to better see the prompts
+
+B) Using a Pico 2
+    Plug in a Pico 2 in bootsel mode, and drag the UF2 file to the pico drive. 
+    Open a console with Pico SDK or an IDE of your choice and follow the prompts
+
+---- STATISTICS ----
+5115 lines of code
+64+ hours spent
+A few headaches
+
+*/
+
 #include "Common.h"
 #include "Lexer.h"
 #include "SyntaxAnalyzer.h"
